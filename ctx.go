@@ -622,8 +622,73 @@ func (c *Ctx) SetDefaultVerifyPaths() error {
 	if ret == 0 {
 		return errorFromErrorQueue()
 	}
+	runtime.KeepAlive(c)
 	return nil
 }
+
+// UseCertificateChainFile
+// https://www.openssl.org/docs/manmaster/man3/SSL_CTX_use_certificate_chain_file.html
+// SSL_CTX_use_certificate_chain_file() loads a certificate chain from file into ctx.
+// The certificates must be in PEM format and must be sorted starting with the subject's
+// certificate (actual client or server certificate), followed by intermediate CA certificates
+// if applicable, and ending at the highest level (root) CA. SSL_use_certificate_chain_file()
+// is similar except it loads the certificate chain into ssl.
+func (c *Ctx) UseCertificateChainFile(file string) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	cFile := C.CString(file)
+	defer C.free(unsafe.Pointer(cFile))
+	ret := C.SSL_CTX_use_certificate_chain_file(c.ctx, cFile)
+	if ret == 0 {
+		return errorFromErrorQueue()
+	}
+	runtime.KeepAlive(c)
+	return nil
+}
+
+// UsePrivateKeyFile
+// https://www.openssl.org/docs/manmaster/man3/SSL_CTX_use_PrivateKey_file.html
+// SSL_CTX_use_PrivateKey_file() adds the first private key found in file to ctx.
+// The formatting type of the private key must be specified from the known types SSL_FILETYPE_PEM,
+// SSL_FILETYPE_ASN1. SSL_CTX_use_RSAPrivateKey_file() adds the first private RSA key found in file
+// to ctx. SSL_use_PrivateKey_file() adds the first private key found in file to ssl;
+// SSL_use_RSAPrivateKey_file() adds the first private RSA key found to ssl.
+const SSL_FILETYPE_PEM = C.SSL_FILETYPE_PEM
+const SSL_FILETYPE_ASN1 = C.SSL_FILETYPE_ASN1
+func (c *Ctx) UsePrivateKeyFile(file string, fileType int) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	cFile := C.CString(file)
+	defer C.free(unsafe.Pointer(cFile))
+	//int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type);
+	// SSL_FILETYPE_PEM、SSL_FILETYPE_ASN1
+	ret := C.SSL_CTX_use_PrivateKey_file(c.ctx, cFile, C.int(fileType))
+	if ret == 0 {
+		return errorFromErrorQueue()
+	}
+	runtime.KeepAlive(c)
+	return nil
+}
+
+
+// SetCiphersuites
+// https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html
+// SSL_CTX_set_ciphersuites() is used to configure the available TLSv1.3 ciphersuites for ctx.
+// This is a simple colon (":") separated list of TLSv1.3 ciphersuite names in order of preference.
+// Valid TLSv1.3 ciphersuite names are:
+func (c *Ctx) SetCiphersuites(str string) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	cStr := C.CString(str)
+	defer C.free(unsafe.Pointer(cStr))
+	ret := C.X_SSL_CTX_set_ciphersuites(c.ctx, cStr)
+	if ret == 0 {
+		return errorFromErrorQueue()
+	}
+	runtime.KeepAlive(c)
+	return nil
+}
+
 
 // GetDefaultCertificateDirectory returns the default directory for the system
 // certificates.

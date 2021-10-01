@@ -598,6 +598,13 @@ int X_SSL_CTX_ticket_key_cb(SSL *s, unsigned char key_name[16],
 	return go_ticket_key_cb_thunk(p, s, key_name, iv, cctx, hctx, enc);
 }
 
+int X_SSL_CTX_set_ciphersuites(SSL_CTX *ctx, const char *str){
+#ifdef TLS1_3_VERSION
+    return SSL_CTX_set_ciphersuites(ctx, str);
+#endif
+    return 1;
+}
+
 int X_BIO_get_flags(BIO *b) {
 	return BIO_get_flags(b);
 }

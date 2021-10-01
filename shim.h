@@ -92,6 +92,9 @@ extern int X_SSL_CTX_ticket_key_cb(SSL *s, unsigned char key_name[16],
         unsigned char iv[EVP_MAX_IV_LENGTH],
         EVP_CIPHER_CTX *cctx, HMAC_CTX *hctx, int enc);
 
+extern int X_SSL_CTX_set_ciphersuites(SSL_CTX *ctx, const char *str);
+
+
 /* BIO methods */
 extern int X_BIO_get_flags(BIO *b);
 extern void X_BIO_set_flags(BIO *bio, int flags);

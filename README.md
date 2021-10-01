@@ -1,3 +1,11 @@
+
+add 
+    SSL_CTX_use_PrivateKey_file
+    SSL_CTX_use_certificate_chain_file
+    X_SSL_CTX_set_ciphersuites
+
+---
+
 # OpenSSL bindings for Go
 
 Please see http://godoc.org/github.com/spacemonkeygo/openssl for more info
