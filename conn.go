@@ -673,3 +673,69 @@ func (c *Conn) setSession(session []byte) error {
 	}
 	return nil
 }
+
+
+// SSLSetMode
+// https://www.openssl.org/docs/man1.1.1/man3/SSL_set_mode.html
+// SSL_CTX_set_mode() adds the mode set via bit mask in mode to ctx. Options already set before are not cleared.
+// SSL_CTX_clear_mode() removes the mode set via bit mask in mode from ctx.
+const (
+	SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER = C.SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER
+	SSL_MODE_ENABLE_PARTIAL_WRITE       = C.SSL_MODE_ENABLE_PARTIAL_WRITE
+	SSL_MODE_AUTO_RETRY                 = C.SSL_MODE_AUTO_RETRY
+	SSL_MODE_RELEASE_BUFFERS            = C.SSL_MODE_RELEASE_BUFFERS
+	SSL_MODE_SEND_FALLBACK_SCSV         = C.SSL_MODE_SEND_FALLBACK_SCSV
+	SSL_MODE_ASYNC                      = C.SSL_MODE_ASYNC
+	SSL_MODE_DTLS_SCTP_LABEL_LENGTH_BUG = C.SSL_MODE_DTLS_SCTP_LABEL_LENGTH_BUG
+)
+func (c *Conn) SSLSetMode(mode int) (int, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	//long SSL_CTX_set_mode(SSL_CTX *ctx, long mode);
+	ret := C.SSL_CTX_set_mode(c.ssl, C.long(mode))
+	if ret == 0 {
+		return ret, errorFromErrorQueue()
+	}
+	runtime.KeepAlive(c)
+	return ret, nil
+}
+
+// SSLSetFd
+// https://www.openssl.org/docs/man1.1.1/man3/SSL_set_fd.html
+// SSL_set_fd() sets the file descriptor fd as the input/output facility for the TLS/SSL (encrypted) side of ssl.
+// fd will typically be the socket file descriptor of a network connection.
+func (c *Conn) SSLSetFd(mode int) (int, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	//int SSL_set_fd(SSL *ssl, int fd);
+	ret := C.SSL_set_fd(c.ssl, C.long(mode))
+	if ret == 0 {
+		return ret, errorFromErrorQueue()
+	}
+	runtime.KeepAlive(c)
+	return ret, nil
+}
+
+// SSLSetConnectState
+// https://www.openssl.org/docs/man1.1.1/man3/SSL_set_connect_state.html
+// SSL_set_connect_state() sets ssl to work in client mode.
+func (c *Conn) SSLSetConnectState() {
+	C.SSL_set_connect_state(c.ssl)
+	runtime.KeepAlive(c)
+}
+
+// SSLConnect
+// https://www.openssl.org/docs/man1.1.1/man3/SSL_connect.html
+// SSL_connect() initiates the TLS/SSL handshake with a server. The communication channel must already have been set and assigned to the ssl by setting an underlying BIO.
+func (c *Conn) SSLConnect() error  {
+	rv := C.SSL_connect(c.ssl)
+	runtime.KeepAlive(c)
+	if rv != 1 {
+		return errors.New(C.SSL_get_error(c.ssl, rv))
+	}
+	return nil
+}
+
+
+
+//int SSL_connect(SSL *ssl);

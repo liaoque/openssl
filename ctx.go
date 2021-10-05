@@ -655,6 +655,7 @@ func (c *Ctx) UseCertificateChainFile(file string) error {
 // SSL_use_RSAPrivateKey_file() adds the first private RSA key found to ssl.
 const SSL_FILETYPE_PEM = C.SSL_FILETYPE_PEM
 const SSL_FILETYPE_ASN1 = C.SSL_FILETYPE_ASN1
+
 func (c *Ctx) UsePrivateKeyFile(file string, fileType int) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -669,7 +670,6 @@ func (c *Ctx) UsePrivateKeyFile(file string, fileType int) error {
 	runtime.KeepAlive(c)
 	return nil
 }
-
 
 // SetCiphersuites
 // https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_ciphersuites.html
@@ -689,7 +689,6 @@ func (c *Ctx) SetCiphersuites(str string) error {
 	return nil
 }
 
-
 // GetDefaultCertificateDirectory returns the default directory for the system
 // certificates.
 func GetDefaultCertificateDirectory() (string, error) {
@@ -699,3 +698,4 @@ func GetDefaultCertificateDirectory() (string, error) {
 	}
 	return dir, nil
 }
+
