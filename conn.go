@@ -674,7 +674,6 @@ func (c *Conn) setSession(session []byte) error {
 	return nil
 }
 
-
 // SSLSetMode
 // https://www.openssl.org/docs/man1.1.1/man3/SSL_set_mode.html
 // SSL_CTX_set_mode() adds the mode set via bit mask in mode to ctx. Options already set before are not cleared.
@@ -688,6 +687,7 @@ const (
 	SSL_MODE_ASYNC                      = C.SSL_MODE_ASYNC
 	SSL_MODE_DTLS_SCTP_LABEL_LENGTH_BUG = C.SSL_MODE_DTLS_SCTP_LABEL_LENGTH_BUG
 )
+
 func (c *Conn) SSLSetMode(mode int) (int, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -724,18 +724,22 @@ func (c *Conn) SSLSetConnectState() {
 	runtime.KeepAlive(c)
 }
 
-// SSLConnect
+// SSLConnect， 请参阅 client 和server， go作为bio
 // https://www.openssl.org/docs/man1.1.1/man3/SSL_connect.html
 // SSL_connect() initiates the TLS/SSL handshake with a server. The communication channel must already have been set and assigned to the ssl by setting an underlying BIO.
-func (c *Conn) SSLConnect() error  {
-	rv := C.SSL_connect(c.ssl)
-	runtime.KeepAlive(c)
-	if rv != 1 {
-		return errors.New(C.SSL_get_error(c.ssl, rv))
-	}
-	return nil
-}
-
-
-
-//int SSL_connect(SSL *ssl);
+//func (c *Conn) SSLConnect(flags int) error {
+//	rv := C.SSL_connect(c.ssl)
+//	runtime.KeepAlive(c)
+//	if rv == 1 {
+//		return nil
+//		//return errors.New(C.SSL_get_error(c.ssl, rv))
+//	}
+//	rv2 := C.SSL_get_error(c.ssl, rv)
+//	if flags > 0 && (rv2 == C.SSL_ERROR_WANT_READ || rv2 == C.SSL_ERROR_WANT_WRITE) {
+//		return nil
+//	}
+//	if rv != C.SSL_ERROR_SYSCALL {
+//		return errors.New(fmt.Sprintf("SSL_connect failed: %s", C.GoString(C.strerror(C.errno))))
+//	}
+//	return errorFromErrorQueue()
+//}
