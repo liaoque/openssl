@@ -1,1 +1,1 @@
-module github.com/mendersoftware/openssl
+module github.com/liaoque/openssl
