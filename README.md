@@ -3,7 +3,17 @@ add
     SSL_CTX_use_PrivateKey_file
     SSL_CTX_use_certificate_chain_file
     X_SSL_CTX_set_ciphersuites
+    X_SSL_CTX_set_mode
+  
+  
+must openssl 1.1.1
 
+
+> No package 'libssl' found 
+> Ubuntu: apt-get install libssl-dev
+> CentOS：yum install openssl-devel  
+  
+    
 ---
 
 # OpenSSL bindings for Go

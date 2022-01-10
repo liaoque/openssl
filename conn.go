@@ -692,7 +692,7 @@ func (c *Conn) SSLSetMode(mode int) (int, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	//long SSL_CTX_set_mode(SSL_CTX *ctx, long mode);
-	ret := C.SSL_CTX_set_mode(c.ssl, C.long(mode))
+	ret := C.X_SSL_CTX_set_mode(c.ssl, C.long(mode))
 	if ret == 0 {
 		return ret, errorFromErrorQueue()
 	}
