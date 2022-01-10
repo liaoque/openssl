@@ -27,7 +27,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/mendersoftware/openssl/utils"
+	"github.com/liaoque/openssl/utils"
 )
 
 var (
