@@ -692,12 +692,12 @@ func (c *Conn) SSLSetMode(mode int) (int, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	//long SSL_CTX_set_mode(SSL_CTX *ctx, long mode);
-	ret := C.X_SSL_CTX_set_mode(c.ssl, C.long(mode))
+	ret := C.X_SSL_CTX_set_mode(c.ctx.ctx, C.long(mode))
 	if ret == 0 {
-		return ret, errorFromErrorQueue()
+		return 0, errorFromErrorQueue()
 	}
 	runtime.KeepAlive(c)
-	return ret, nil
+	return int(ret), nil
 }
 
 // SSLSetFd
@@ -708,12 +708,12 @@ func (c *Conn) SSLSetFd(mode int) (int, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	//int SSL_set_fd(SSL *ssl, int fd);
-	ret := C.SSL_set_fd(c.ssl, C.long(mode))
+	ret := C.SSL_set_fd(c.ssl, C.int(mode))
 	if ret == 0 {
-		return ret, errorFromErrorQueue()
+		return 0, errorFromErrorQueue()
 	}
 	runtime.KeepAlive(c)
-	return ret, nil
+	return int(ret), nil
 }
 
 // SSLSetConnectState
